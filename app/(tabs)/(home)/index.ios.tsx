@@ -1,43 +1,324 @@
-import React from "react";
-import { Stack } from "expo-router";
-import { FlatList, StyleSheet, View } from "react-native";
-import { useTheme } from "@react-navigation/native";
-import { modalDemos } from "@/components/homeData";
-import { DemoCard } from "@/components/DemoCard";
-import { HeaderRightButton, HeaderLeftButton } from "@/components/HeaderButtons";
+
+import React, { useState, useEffect } from 'react';
+import {
+  View,
+  Text,
+  StyleSheet,
+  TouchableOpacity,
+  ScrollView,
+} from 'react-native';
+import { LinearGradient } from 'expo-linear-gradient';
+import * as Haptics from 'expo-haptics';
+import { colors } from '@/styles/commonStyles';
+import { getDailyQuote } from '@/data/motivationalContent';
+import { getStoredData, updateCheckIn, getTodayCheckIn, UserStats } from '@/utils/storage';
+import { IconSymbol } from '@/components/IconSymbol';
 
 export default function HomeScreen() {
-  const theme = useTheme();
+  const [expanded, setExpanded] = useState(false);
+  const [stats, setStats] = useState<UserStats | null>(null);
+  const [todayCheckIn, setTodayCheckIn] = useState({
+    morningRoutine: false,
+    meditation: false,
+    eveningReflection: false,
+  });
+
+  const dailyQuote = getDailyQuote();
+
+  useEffect(() => {
+    loadData();
+  }, []);
+
+  const loadData = async () => {
+    const data = await getStoredData();
+    setStats(data);
+    const today = getTodayCheckIn(data.checkIns);
+    if (today) {
+      setTodayCheckIn(today);
+    }
+  };
+
+  const handleCheckIn = async (type: 'morningRoutine' | 'meditation' | 'eveningReflection') => {
+    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
+    const updatedData = await updateCheckIn(type);
+    setStats(updatedData);
+    const today = getTodayCheckIn(updatedData.checkIns);
+    if (today) {
+      setTodayCheckIn(today);
+    }
+  };
+
+  const getSundayCountdown = () => {
+    const now = new Date();
+    const dayOfWeek = now.getDay();
+    const daysUntilSunday = dayOfWeek === 0 ? 0 : 7 - dayOfWeek;
+    
+    if (daysUntilSunday === 0) {
+      return 'Today is Sunday! 🙏';
+    } else if (daysUntilSunday === 1) {
+      return 'Tomorrow is Sunday! 🙏';
+    } else {
+      return `${daysUntilSunday} days until Sunday meditation`;
+    }
+  };
 
   return (
-    <>
-      <Stack.Screen
-        options={{
-          title: "Building the app...",
-          headerRight: () => <HeaderRightButton />,
-          headerLeft: () => <HeaderLeftButton />,
-        }}
-      />
-      <View style={[styles.container, { backgroundColor: theme.colors.background }]}>
-        <FlatList
-          data={modalDemos}
-          renderItem={({ item }) => <DemoCard item={item} />}
-          keyExtractor={(item) => item.route}
-          contentContainerStyle={styles.listContainer}
-          contentInsetAdjustmentBehavior="automatic"
+    <View style={styles.container}>
+      <LinearGradient
+        colors={[colors.background, colors.highlight]}
+        style={styles.gradient}
+      >
+        <ScrollView
+          style={styles.scrollView}
+          contentContainerStyle={styles.content}
           showsVerticalScrollIndicator={false}
-        />
-      </View>
-    </>
+        >
+          <Text style={styles.header}>Daily Inspiration</Text>
+          
+          <TouchableOpacity
+            style={styles.quoteCard}
+            onPress={() => {
+              Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+              setExpanded(!expanded);
+            }}
+            activeOpacity={0.8}
+          >
+            <View style={styles.quoteBadge}>
+              <Text style={styles.quoteBadgeText}>{dailyQuote.category}</Text>
+            </View>
+            <Text
+              style={styles.quoteText}
+              numberOfLines={expanded ? undefined : 2}
+            >
+              {dailyQuote.text}
+            </Text>
+            <Text style={styles.tapToExpand}>
+              {expanded ? 'Tap to collapse' : 'Tap to expand'}
+            </Text>
+          </TouchableOpacity>
+
+          <View style={styles.streakCard}>
+            <IconSymbol
+              ios_icon_name="flame.fill"
+              android_material_icon_name="local_fire_department"
+              size={32}
+              color={colors.primary}
+            />
+            <Text style={styles.streakText}>
+              {stats?.currentStreak || 0} Day Streak
+            </Text>
+          </View>
+
+          <Text style={styles.sectionTitle}>Daily Practice</Text>
+          
+          <View style={styles.checkInContainer}>
+            <TouchableOpacity
+              style={[
+                styles.checkInButton,
+                todayCheckIn.morningRoutine && styles.checkInButtonActive,
+              ]}
+              onPress={() => handleCheckIn('morningRoutine')}
+              activeOpacity={0.7}
+            >
+              <IconSymbol
+                ios_icon_name="sunrise.fill"
+                android_material_icon_name="wb_sunny"
+                size={28}
+                color={todayCheckIn.morningRoutine ? colors.card : colors.primary}
+              />
+              <Text
+                style={[
+                  styles.checkInText,
+                  todayCheckIn.morningRoutine && styles.checkInTextActive,
+                ]}
+              >
+                Morning Routine
+              </Text>
+            </TouchableOpacity>
+
+            <TouchableOpacity
+              style={[
+                styles.checkInButton,
+                todayCheckIn.meditation && styles.checkInButtonActive,
+              ]}
+              onPress={() => handleCheckIn('meditation')}
+              activeOpacity={0.7}
+            >
+              <IconSymbol
+                ios_icon_name="figure.mind.and.body"
+                android_material_icon_name="self_improvement"
+                size={28}
+                color={todayCheckIn.meditation ? colors.card : colors.secondary}
+              />
+              <Text
+                style={[
+                  styles.checkInText,
+                  todayCheckIn.meditation && styles.checkInTextActive,
+                ]}
+              >
+                Meditation
+              </Text>
+            </TouchableOpacity>
+
+            <TouchableOpacity
+              style={[
+                styles.checkInButton,
+                todayCheckIn.eveningReflection && styles.checkInButtonActive,
+              ]}
+              onPress={() => handleCheckIn('eveningReflection')}
+              activeOpacity={0.7}
+            >
+              <IconSymbol
+                ios_icon_name="moon.stars.fill"
+                android_material_icon_name="nightlight"
+                size={28}
+                color={todayCheckIn.eveningReflection ? colors.card : colors.accent}
+              />
+              <Text
+                style={[
+                  styles.checkInText,
+                  todayCheckIn.eveningReflection && styles.checkInTextActive,
+                ]}
+              >
+                Evening Reflection
+              </Text>
+            </TouchableOpacity>
+          </View>
+
+          <View style={styles.sundayCard}>
+            <IconSymbol
+              ios_icon_name="person.3.fill"
+              android_material_icon_name="groups"
+              size={24}
+              color={colors.secondary}
+            />
+            <Text style={styles.sundayText}>{getSundayCountdown()}</Text>
+          </View>
+        </ScrollView>
+      </LinearGradient>
+    </View>
   );
 }
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+    backgroundColor: colors.background,
   },
-  listContainer: {
-    paddingVertical: 16,
-    paddingHorizontal: 16,
+  gradient: {
+    flex: 1,
+  },
+  scrollView: {
+    flex: 1,
+  },
+  content: {
+    paddingTop: 20,
+    paddingHorizontal: 20,
+    paddingBottom: 40,
+  },
+  header: {
+    fontSize: 28,
+    fontWeight: '800',
+    color: colors.text,
+    marginBottom: 16,
+    textAlign: 'center',
+  },
+  quoteCard: {
+    backgroundColor: colors.card,
+    borderRadius: 16,
+    padding: 20,
+    marginBottom: 20,
+    boxShadow: '0px 4px 12px rgba(0, 0, 0, 0.1)',
+    elevation: 4,
+  },
+  quoteBadge: {
+    backgroundColor: colors.secondary,
+    paddingHorizontal: 12,
+    paddingVertical: 6,
+    borderRadius: 12,
+    alignSelf: 'flex-start',
+    marginBottom: 12,
+  },
+  quoteBadgeText: {
+    color: colors.card,
+    fontSize: 12,
+    fontWeight: '700',
+  },
+  quoteText: {
+    fontSize: 16,
+    lineHeight: 24,
+    color: colors.text,
+    marginBottom: 8,
+  },
+  tapToExpand: {
+    fontSize: 12,
+    color: colors.textSecondary,
+    fontStyle: 'italic',
+    textAlign: 'center',
+  },
+  streakCard: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: colors.card,
+    borderRadius: 16,
+    padding: 16,
+    marginBottom: 24,
+    boxShadow: '0px 4px 12px rgba(0, 0, 0, 0.1)',
+    elevation: 4,
+  },
+  streakText: {
+    fontSize: 24,
+    fontWeight: '800',
+    color: colors.text,
+    marginLeft: 12,
+  },
+  sectionTitle: {
+    fontSize: 20,
+    fontWeight: '700',
+    color: colors.text,
+    marginBottom: 16,
+    textAlign: 'center',
+  },
+  checkInContainer: {
+    gap: 12,
+    marginBottom: 24,
+  },
+  checkInButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: colors.card,
+    borderRadius: 16,
+    padding: 20,
+    boxShadow: '0px 4px 12px rgba(0, 0, 0, 0.1)',
+    elevation: 4,
+  },
+  checkInButtonActive: {
+    backgroundColor: colors.primary,
+  },
+  checkInText: {
+    fontSize: 18,
+    fontWeight: '700',
+    color: colors.text,
+    marginLeft: 16,
+  },
+  checkInTextActive: {
+    color: colors.card,
+  },
+  sundayCard: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: colors.highlight,
+    borderRadius: 16,
+    padding: 16,
+    borderWidth: 2,
+    borderColor: colors.secondary,
+  },
+  sundayText: {
+    fontSize: 16,
+    fontWeight: '700',
+    color: colors.text,
+    marginLeft: 12,
   },
 });
