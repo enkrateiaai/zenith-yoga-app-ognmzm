@@ -15,25 +15,25 @@ export default function TabLayout() {
     {
       name: 'challenge',
       route: '/(tabs)/challenge',
-      icon: 'target',
+      icon: 'flame',
       label: 'Challenge',
     },
     {
       name: 'youtube',
       route: '/(tabs)/youtube',
-      icon: 'play',
-      label: 'YouTube',
+      icon: 'people',
+      label: 'The Tribe',
     },
     {
       name: 'live',
       route: '/(tabs)/live',
-      icon: 'radio',
+      icon: 'videocam',
       label: 'Live',
     },
     {
       name: 'subscription',
       route: '/(tabs)/subscription',
-      icon: 'star',
+      icon: 'crown',
       label: 'Abo',
     },
   ];

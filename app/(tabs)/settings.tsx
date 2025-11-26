@@ -8,6 +8,7 @@ import {
   Platform,
   Switch,
   Alert,
+  ScrollView,
 } from 'react-native';
 import DateTimePicker from '@react-native-community/datetimepicker';
 import { LinearGradient } from 'expo-linear-gradient';
@@ -123,157 +124,128 @@ export default function SettingsScreen() {
     return date;
   };
 
+  const notificationTypes = [
+    {
+      type: 'morning' as const,
+      title: t('morningReminder'),
+      icon: 'sunrise.fill',
+      androidIcon: 'wb_sunny',
+      color: colors.accent,
+      gradient: ['#FFE5B4', '#FFDAB9'],
+    },
+    {
+      type: 'midday' as const,
+      title: t('middayReminder'),
+      icon: 'figure.mind.and.body',
+      androidIcon: 'self_improvement',
+      color: colors.secondary,
+      gradient: ['#E8DAEF', '#D7BDE2'],
+    },
+    {
+      type: 'evening' as const,
+      title: t('eveningReminder'),
+      icon: 'moon.stars.fill',
+      androidIcon: 'nightlight',
+      color: colors.primary,
+      gradient: ['#FFD6E8', '#FFC1D9'],
+    },
+    {
+      type: 'sunday' as const,
+      title: t('sundayCommunity'),
+      icon: 'person.3.fill',
+      androidIcon: 'groups',
+      color: colors.success,
+      gradient: ['#D4F1F4', '#B8E6E9'],
+    },
+  ];
+
   return (
     <View style={styles.container}>
       <LinearGradient
         colors={[colors.background, colors.highlight]}
         style={styles.gradient}
       >
-        <View style={styles.content}>
-          <Text style={styles.header}>{t('notificationSettings')}</Text>
-
-          <View style={styles.settingCard}>
-            <View style={styles.settingHeader}>
-              <View style={styles.settingTitleRow}>
-                <IconSymbol
-                  ios_icon_name="sunrise.fill"
-                  android_material_icon_name="wb_sunny"
-                  size={24}
-                  color={colors.primary}
-                />
-                <Text style={styles.settingTitle}>{t('morningReminder')}</Text>
-              </View>
-              <Switch
-                value={settings.morningEnabled}
-                onValueChange={() => handleToggle('morning')}
-                trackColor={{ false: colors.textSecondary, true: colors.primary }}
-                thumbColor={colors.card}
-              />
-            </View>
-            {settings.morningEnabled && (
-              <TouchableOpacity
-                style={styles.timeButton}
-                onPress={() => {
-                  Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
-                  setShowTimePicker({ type: 'morning' });
-                }}
-                activeOpacity={0.7}
-              >
-                <Text style={styles.timeButtonText}>
-                  {formatTime(settings.morningTime.hour, settings.morningTime.minute)}
-                </Text>
-              </TouchableOpacity>
-            )}
+        <ScrollView
+          style={styles.scrollView}
+          contentContainerStyle={styles.content}
+          showsVerticalScrollIndicator={false}
+        >
+          <View style={styles.headerContainer}>
+            <IconSymbol
+              ios_icon_name="bell.badge.fill"
+              android_material_icon_name="notifications_active"
+              size={48}
+              color={colors.primary}
+            />
+            <Text style={styles.header}>{t('notificationSettings')}</Text>
           </View>
 
-          <View style={styles.settingCard}>
-            <View style={styles.settingHeader}>
-              <View style={styles.settingTitleRow}>
-                <IconSymbol
-                  ios_icon_name="sun.max.fill"
-                  android_material_icon_name="wb_sunny"
-                  size={24}
-                  color={colors.secondary}
-                />
-                <Text style={styles.settingTitle}>{t('middayReminder')}</Text>
-              </View>
-              <Switch
-                value={settings.middayEnabled}
-                onValueChange={() => handleToggle('midday')}
-                trackColor={{ false: colors.textSecondary, true: colors.secondary }}
-                thumbColor={colors.card}
-              />
-            </View>
-            {settings.middayEnabled && (
-              <TouchableOpacity
-                style={styles.timeButton}
-                onPress={() => {
-                  Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
-                  setShowTimePicker({ type: 'midday' });
-                }}
-                activeOpacity={0.7}
+          {notificationTypes.map((item, index) => {
+            const enabled = settings[`${item.type}Enabled`];
+            const time = settings[`${item.type}Time`];
+            
+            return (
+              <LinearGradient
+                key={index}
+                colors={item.gradient}
+                style={styles.settingCard}
               >
-                <Text style={styles.timeButtonText}>
-                  {formatTime(settings.middayTime.hour, settings.middayTime.minute)}
-                </Text>
-              </TouchableOpacity>
-            )}
-          </View>
-
-          <View style={styles.settingCard}>
-            <View style={styles.settingHeader}>
-              <View style={styles.settingTitleRow}>
-                <IconSymbol
-                  ios_icon_name="moon.stars.fill"
-                  android_material_icon_name="nightlight"
-                  size={24}
-                  color={colors.accent}
-                />
-                <Text style={styles.settingTitle}>{t('eveningReminder')}</Text>
-              </View>
-              <Switch
-                value={settings.eveningEnabled}
-                onValueChange={() => handleToggle('evening')}
-                trackColor={{ false: colors.textSecondary, true: colors.accent }}
-                thumbColor={colors.card}
-              />
-            </View>
-            {settings.eveningEnabled && (
-              <TouchableOpacity
-                style={styles.timeButton}
-                onPress={() => {
-                  Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
-                  setShowTimePicker({ type: 'evening' });
-                }}
-                activeOpacity={0.7}
-              >
-                <Text style={styles.timeButtonText}>
-                  {formatTime(settings.eveningTime.hour, settings.eveningTime.minute)}
-                </Text>
-              </TouchableOpacity>
-            )}
-          </View>
-
-          <View style={styles.settingCard}>
-            <View style={styles.settingHeader}>
-              <View style={styles.settingTitleRow}>
-                <IconSymbol
-                  ios_icon_name="person.3.fill"
-                  android_material_icon_name="groups"
-                  size={24}
-                  color={colors.secondary}
-                />
-                <Text style={styles.settingTitle}>{t('sundayCommunity')}</Text>
-              </View>
-              <Switch
-                value={settings.sundayEnabled}
-                onValueChange={() => handleToggle('sunday')}
-                trackColor={{ false: colors.textSecondary, true: colors.secondary }}
-                thumbColor={colors.card}
-              />
-            </View>
-            {settings.sundayEnabled && (
-              <TouchableOpacity
-                style={styles.timeButton}
-                onPress={() => {
-                  Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
-                  setShowTimePicker({ type: 'sunday' });
-                }}
-                activeOpacity={0.7}
-              >
-                <Text style={styles.timeButtonText}>
-                  {formatTime(settings.sundayTime.hour, settings.sundayTime.minute)}
-                </Text>
-              </TouchableOpacity>
-            )}
-          </View>
+                <View style={styles.settingHeader}>
+                  <View style={styles.settingTitleRow}>
+                    <View style={[styles.iconContainer, { backgroundColor: item.color }]}>
+                      <IconSymbol
+                        ios_icon_name={item.icon}
+                        android_material_icon_name={item.androidIcon}
+                        size={28}
+                        color={colors.card}
+                      />
+                    </View>
+                    <Text style={styles.settingTitle}>{item.title}</Text>
+                  </View>
+                  <Switch
+                    value={enabled}
+                    onValueChange={() => handleToggle(item.type)}
+                    trackColor={{ false: colors.textSecondary, true: item.color }}
+                    thumbColor={colors.card}
+                    ios_backgroundColor={colors.textSecondary}
+                  />
+                </View>
+                {enabled && (
+                  <TouchableOpacity
+                    style={[styles.timeButton, { borderColor: item.color }]}
+                    onPress={() => {
+                      Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+                      setShowTimePicker({ type: item.type });
+                    }}
+                    activeOpacity={0.7}
+                  >
+                    <IconSymbol
+                      ios_icon_name="clock.fill"
+                      android_material_icon_name="schedule"
+                      size={24}
+                      color={item.color}
+                    />
+                    <Text style={[styles.timeButtonText, { color: item.color }]}>
+                      {formatTime(time.hour, time.minute)}
+                    </Text>
+                    <IconSymbol
+                      ios_icon_name="chevron.right"
+                      android_material_icon_name="chevron_right"
+                      size={20}
+                      color={colors.textSecondary}
+                    />
+                  </TouchableOpacity>
+                )}
+              </LinearGradient>
+            );
+          })}
 
           <View style={styles.infoCard}>
             <IconSymbol
-              ios_icon_name="info.circle.fill"
-              android_material_icon_name="info"
-              size={24}
-              color={colors.secondary}
+              ios_icon_name="lightbulb.fill"
+              android_material_icon_name="lightbulb"
+              size={28}
+              color={colors.warning}
             />
             <Text style={styles.infoText}>
               {t('notificationInfo')}
@@ -294,7 +266,7 @@ export default function SettingsScreen() {
               }
             />
           )}
-        </View>
+        </ScrollView>
       </LinearGradient>
     </View>
   );
@@ -308,26 +280,31 @@ const styles = StyleSheet.create({
   gradient: {
     flex: 1,
   },
-  content: {
+  scrollView: {
     flex: 1,
+  },
+  content: {
     paddingTop: Platform.OS === 'android' ? 48 : 60,
     paddingHorizontal: 20,
     paddingBottom: 100,
   },
+  headerContainer: {
+    alignItems: 'center',
+    marginBottom: 32,
+  },
   header: {
-    fontSize: 28,
+    fontSize: 32,
     fontWeight: '800',
     color: colors.text,
-    marginBottom: 24,
+    marginTop: 12,
     textAlign: 'center',
   },
   settingCard: {
-    backgroundColor: colors.card,
-    borderRadius: 16,
+    borderRadius: 20,
     padding: 20,
     marginBottom: 16,
-    boxShadow: '0px 4px 12px rgba(0, 0, 0, 0.1)',
-    elevation: 4,
+    boxShadow: '0px 6px 16px rgba(0, 0, 0, 0.12)',
+    elevation: 5,
   },
   settingHeader: {
     flexDirection: 'row',
@@ -337,38 +314,59 @@ const styles = StyleSheet.create({
   settingTitleRow: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: 12,
+    gap: 14,
+    flex: 1,
+  },
+  iconContainer: {
+    width: 48,
+    height: 48,
+    borderRadius: 24,
+    justifyContent: 'center',
+    alignItems: 'center',
+    boxShadow: '0px 3px 8px rgba(0, 0, 0, 0.15)',
+    elevation: 3,
   },
   settingTitle: {
-    fontSize: 18,
+    fontSize: 19,
     fontWeight: '700',
     color: colors.text,
+    flex: 1,
   },
   timeButton: {
-    marginTop: 12,
-    backgroundColor: colors.background,
-    borderRadius: 12,
-    padding: 12,
+    marginTop: 16,
+    backgroundColor: colors.card,
+    borderRadius: 14,
+    padding: 16,
+    flexDirection: 'row',
     alignItems: 'center',
+    justifyContent: 'space-between',
+    borderWidth: 2,
+    boxShadow: '0px 3px 8px rgba(0, 0, 0, 0.1)',
+    elevation: 3,
   },
   timeButtonText: {
-    fontSize: 16,
-    fontWeight: '700',
-    color: colors.text,
+    fontSize: 24,
+    fontWeight: '800',
+    flex: 1,
+    textAlign: 'center',
   },
   infoCard: {
     flexDirection: 'row',
-    backgroundColor: colors.highlight,
+    backgroundColor: colors.card,
     borderRadius: 16,
-    padding: 16,
-    gap: 12,
+    padding: 20,
+    gap: 14,
     borderWidth: 2,
-    borderColor: colors.secondary,
+    borderColor: colors.warning,
+    boxShadow: '0px 4px 12px rgba(0, 0, 0, 0.1)',
+    elevation: 4,
+    marginTop: 8,
   },
   infoText: {
     flex: 1,
     fontSize: 14,
-    lineHeight: 20,
+    lineHeight: 22,
     color: colors.text,
+    fontWeight: '500',
   },
 });

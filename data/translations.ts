@@ -41,10 +41,11 @@ export const translations = {
   motivationMaster: 'Du bist ein Meditationsmeister! Deine Beständigkeit ist wirklich inspirierend.',
   
   // Settings Screen
-  notificationSettings: 'Benachrichtigungseinstellungen',
-  morningReminder: 'Morgenerinnerung',
-  middayReminder: 'Mittagserinnerung',
-  eveningReminder: 'Abenderinnerung',
+  settings: 'Einstellungen',
+  notificationSettings: 'Benachrichtigungen',
+  morningReminder: 'Morgenroutine',
+  middayReminder: 'Meditation',
+  eveningReminder: 'Abendreflexion',
   sundayCommunity: 'Sonntags-Gemeinschaft',
   notificationInfo: 'Aktiviere Benachrichtigungen, um tägliche Erinnerungen für deine Meditationspraxis zu erhalten. Du kannst die Zeit für jede Erinnerung anpassen.',
   
@@ -57,16 +58,16 @@ export const translations = {
   freeTierFeature3: 'Fortschrittsverfolgung',
   freeTierFeature4: 'Benachrichtigungen',
   
-  midTier: 'YouTube Galerie',
-  midTierDesc: 'Zugang zu YouTube-Playlists',
+  midTier: 'The Tribe',
+  midTierDesc: 'Zugang zur Community',
   midTierFeature1: 'Alle kostenlosen Funktionen',
   midTierFeature2: 'YouTube-Playlist-Galerie',
   midTierFeature3: 'Geführte Meditationen',
   midTierFeature4: 'Yoga-Tutorials',
   
   premiumTier: 'Premium Live',
-  premiumTierDesc: 'Vollständiger Zugang + Live-Stream',
-  premiumTierFeature1: 'Alle Mid-Tier-Funktionen',
+  premiumTierDesc: 'The Tribe, täglich live',
+  premiumTierFeature1: 'Alle The Tribe Funktionen',
   premiumTierFeature2: 'Live-Meditations-Stream',
   premiumTierFeature3: 'Exklusive Inhalte',
   premiumTierFeature4: 'Prioritäts-Support',
@@ -77,10 +78,10 @@ export const translations = {
   restorePurchases: 'Käufe wiederherstellen',
   
   // YouTube Gallery
-  youtubeGallery: 'YouTube Galerie',
+  youtubeGallery: 'The Tribe Galerie',
   playlists: 'Playlists',
   upgradeRequired: 'Upgrade erforderlich',
-  upgradeMessage: 'Upgrade auf YouTube Galerie, um auf diese Funktion zuzugreifen.',
+  upgradeMessage: 'Upgrade auf The Tribe, um auf diese Funktion zuzugreifen.',
   upgradeNow: 'Jetzt upgraden',
   
   // Live Meditation
@@ -93,7 +94,7 @@ export const translations = {
   home: 'Start',
   challenge: 'Challenge',
   stats: 'Statistik',
-  youtube: 'YouTube',
+  youtube: 'The Tribe',
   live: 'Live',
   subscription: 'Abo',
 };

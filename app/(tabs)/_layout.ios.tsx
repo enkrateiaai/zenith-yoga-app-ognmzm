@@ -21,28 +21,28 @@ export default function TabLayout() {
         name="challenge"
         options={{
           title: 'Challenge',
-          tabBarIcon: ({ color }) => ({ sfSymbol: 'target', hierarchicalColor: color }),
+          tabBarIcon: ({ color }) => ({ sfSymbol: 'flame.fill', hierarchicalColor: color }),
         }}
       />
       <NativeTabs.Screen
         name="youtube"
         options={{
-          title: 'YouTube',
-          tabBarIcon: ({ color }) => ({ sfSymbol: 'play.rectangle.fill', hierarchicalColor: color }),
+          title: 'The Tribe',
+          tabBarIcon: ({ color }) => ({ sfSymbol: 'person.3.fill', hierarchicalColor: color }),
         }}
       />
       <NativeTabs.Screen
         name="live"
         options={{
           title: 'Live',
-          tabBarIcon: ({ color }) => ({ sfSymbol: 'dot.radiowaves.left.and.right', hierarchicalColor: color }),
+          tabBarIcon: ({ color }) => ({ sfSymbol: 'video.fill', hierarchicalColor: color }),
         }}
       />
       <NativeTabs.Screen
         name="subscription"
         options={{
           title: 'Abo',
-          tabBarIcon: ({ color }) => ({ sfSymbol: 'star.fill', hierarchicalColor: color }),
+          tabBarIcon: ({ color }) => ({ sfSymbol: 'crown.fill', hierarchicalColor: color }),
         }}
       />
       <NativeTabs.Screen

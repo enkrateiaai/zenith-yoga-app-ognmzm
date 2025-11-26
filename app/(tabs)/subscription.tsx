@@ -27,6 +27,7 @@ interface TierOption {
   description: string;
   features: string[];
   color: string;
+  gradient: string[];
 }
 
 export default function SubscriptionScreen() {
@@ -54,11 +55,12 @@ export default function SubscriptionScreen() {
         t('freeTierFeature4'),
       ],
       color: colors.textSecondary,
+      gradient: [colors.card, colors.highlight],
     },
     {
       id: 'mid',
       name: t('midTier'),
-      price: '€4,99',
+      price: '€29,99',
       description: t('midTierDesc'),
       features: [
         t('midTierFeature1'),
@@ -67,11 +69,12 @@ export default function SubscriptionScreen() {
         t('midTierFeature4'),
       ],
       color: colors.secondary,
+      gradient: ['#E8DAEF', '#D7BDE2'],
     },
     {
       id: 'premium',
       name: t('premiumTier'),
-      price: '€9,99',
+      price: '€59,99',
       description: t('premiumTierDesc'),
       features: [
         t('premiumTierFeature1'),
@@ -80,6 +83,7 @@ export default function SubscriptionScreen() {
         t('premiumTierFeature4'),
       ],
       color: colors.accent,
+      gradient: ['#FFE5B4', '#FFDAB9'],
     },
   ];
 
@@ -114,11 +118,12 @@ export default function SubscriptionScreen() {
       return;
     }
 
-    // For demo purposes, we'll simulate a purchase
-    // In production, this would integrate with Apple/Google in-app purchases
+    const tierName = tier === 'mid' ? 'The Tribe' : 'Premium Live (The Tribe, täglich live)';
+    const tierPrice = tier === 'mid' ? '€29,99' : '€59,99';
+
     Alert.alert(
       'Kauf bestätigen',
-      `Möchtest du ${tier === 'mid' ? 'YouTube Galerie' : 'Premium Live'} für ${tier === 'mid' ? '€4,99' : '€9,99'}/Monat kaufen?\n\nHinweis: Dies ist eine Demo. In der Produktion würde dies über Apple/Google In-App-Käufe abgewickelt.`,
+      `Möchtest du ${tierName} für ${tierPrice}/Monat kaufen?\n\nHinweis: Dies ist eine Demo. In der Produktion würde dies über Apple/Google In-App-Käufe abgewickelt.`,
       [
         { text: 'Abbrechen', style: 'cancel' },
         {
@@ -156,20 +161,29 @@ export default function SubscriptionScreen() {
           contentContainerStyle={styles.content}
           showsVerticalScrollIndicator={false}
         >
-          <Text style={styles.header}>{t('subscriptionTitle')}</Text>
+          <View style={styles.headerContainer}>
+            <IconSymbol
+              ios_icon_name="crown.fill"
+              android_material_icon_name="workspace_premium"
+              size={48}
+              color={colors.accent}
+            />
+            <Text style={styles.header}>{t('subscriptionTitle')}</Text>
+          </View>
 
           {tiers.map((tier, index) => {
             const isCurrentTier = tier.id === currentTier;
             return (
-              <View
+              <LinearGradient
                 key={index}
+                colors={tier.gradient}
                 style={[
                   styles.tierCard,
                   isCurrentTier && styles.tierCardActive,
                 ]}
               >
                 <View style={styles.tierHeader}>
-                  <View>
+                  <View style={styles.tierHeaderLeft}>
                     <Text style={styles.tierName}>{tier.name}</Text>
                     <Text style={styles.tierDescription}>{tier.description}</Text>
                   </View>
@@ -189,7 +203,7 @@ export default function SubscriptionScreen() {
                       <IconSymbol
                         ios_icon_name="checkmark.circle.fill"
                         android_material_icon_name="check_circle"
-                        size={20}
+                        size={22}
                         color={tier.color}
                       />
                       <Text style={styles.featureText}>{feature}</Text>
@@ -201,7 +215,10 @@ export default function SubscriptionScreen() {
                   style={[
                     styles.selectButton,
                     isCurrentTier && styles.selectButtonActive,
-                    { backgroundColor: isCurrentTier ? tier.color : colors.card },
+                    { 
+                      backgroundColor: isCurrentTier ? tier.color : colors.card,
+                      borderColor: tier.color,
+                    },
                   ]}
                   onPress={() => handleSelectTier(tier.id)}
                   activeOpacity={0.7}
@@ -210,12 +227,21 @@ export default function SubscriptionScreen() {
                     style={[
                       styles.selectButtonText,
                       isCurrentTier && styles.selectButtonTextActive,
+                      { color: isCurrentTier ? colors.card : tier.color },
                     ]}
                   >
                     {isCurrentTier ? t('currentPlan') : t('selectPlan')}
                   </Text>
+                  {isCurrentTier && (
+                    <IconSymbol
+                      ios_icon_name="checkmark.circle.fill"
+                      android_material_icon_name="check_circle"
+                      size={20}
+                      color={colors.card}
+                    />
+                  )}
                 </TouchableOpacity>
-              </View>
+              </LinearGradient>
             );
           })}
 
@@ -225,9 +251,9 @@ export default function SubscriptionScreen() {
             activeOpacity={0.7}
           >
             <IconSymbol
-              ios_icon_name="arrow.clockwise"
+              ios_icon_name="arrow.clockwise.circle.fill"
               android_material_icon_name="refresh"
-              size={20}
+              size={24}
               color={colors.secondary}
             />
             <Text style={styles.restoreButtonText}>{t('restorePurchases')}</Text>
@@ -238,7 +264,7 @@ export default function SubscriptionScreen() {
               ios_icon_name="info.circle.fill"
               android_material_icon_name="info"
               size={24}
-              color={colors.secondary}
+              color={colors.info}
             />
             <Text style={styles.infoText}>
               Hinweis: Dies ist eine Demo-Version. In der Produktion würden Käufe über Apple App Store oder Google Play Store abgewickelt. Abonnements können jederzeit in deinen Kontoeinstellungen gekündigt werden.
@@ -266,21 +292,24 @@ const styles = StyleSheet.create({
     paddingHorizontal: 20,
     paddingBottom: 120,
   },
+  headerContainer: {
+    alignItems: 'center',
+    marginBottom: 32,
+  },
   header: {
-    fontSize: 28,
+    fontSize: 32,
     fontWeight: '800',
     color: colors.text,
-    marginBottom: 24,
+    marginTop: 12,
     textAlign: 'center',
   },
   tierCard: {
-    backgroundColor: colors.card,
-    borderRadius: 16,
-    padding: 20,
-    marginBottom: 16,
-    boxShadow: '0px 4px 12px rgba(0, 0, 0, 0.1)',
-    elevation: 4,
-    borderWidth: 2,
+    borderRadius: 20,
+    padding: 24,
+    marginBottom: 20,
+    boxShadow: '0px 6px 16px rgba(0, 0, 0, 0.15)',
+    elevation: 6,
+    borderWidth: 3,
     borderColor: 'transparent',
   },
   tierCardActive: {
@@ -290,57 +319,64 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'flex-start',
-    marginBottom: 16,
+    marginBottom: 20,
+  },
+  tierHeaderLeft: {
+    flex: 1,
   },
   tierName: {
-    fontSize: 22,
+    fontSize: 24,
     fontWeight: '800',
     color: colors.text,
-    marginBottom: 4,
+    marginBottom: 6,
   },
   tierDescription: {
-    fontSize: 14,
+    fontSize: 15,
     color: colors.textSecondary,
+    fontWeight: '500',
   },
   priceContainer: {
     alignItems: 'flex-end',
   },
   tierPrice: {
-    fontSize: 28,
+    fontSize: 32,
     fontWeight: '800',
   },
   perMonth: {
-    fontSize: 12,
+    fontSize: 13,
     color: colors.textSecondary,
+    fontWeight: '600',
   },
   featuresContainer: {
-    marginBottom: 16,
+    marginBottom: 20,
   },
   featureRow: {
     flexDirection: 'row',
     alignItems: 'center',
-    marginBottom: 8,
-    gap: 8,
+    marginBottom: 12,
+    gap: 10,
   },
   featureText: {
-    fontSize: 14,
+    fontSize: 15,
     color: colors.text,
     flex: 1,
+    fontWeight: '500',
   },
   selectButton: {
-    borderRadius: 12,
-    padding: 14,
+    borderRadius: 14,
+    padding: 16,
     alignItems: 'center',
+    justifyContent: 'center',
     borderWidth: 2,
-    borderColor: colors.primary,
+    flexDirection: 'row',
+    gap: 8,
   },
   selectButtonActive: {
     borderColor: 'transparent',
   },
   selectButtonText: {
-    fontSize: 16,
+    fontSize: 17,
     fontWeight: '700',
-    color: colors.primary,
   },
   selectButtonTextActive: {
     color: colors.card,
@@ -350,31 +386,34 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     backgroundColor: colors.card,
-    borderRadius: 12,
-    padding: 14,
-    marginBottom: 16,
-    gap: 8,
-    boxShadow: '0px 2px 6px rgba(0, 0, 0, 0.1)',
-    elevation: 2,
+    borderRadius: 14,
+    padding: 16,
+    marginBottom: 20,
+    gap: 10,
+    boxShadow: '0px 3px 8px rgba(0, 0, 0, 0.1)',
+    elevation: 3,
   },
   restoreButtonText: {
-    fontSize: 16,
-    fontWeight: '600',
+    fontSize: 17,
+    fontWeight: '700',
     color: colors.secondary,
   },
   infoCard: {
     flexDirection: 'row',
-    backgroundColor: colors.highlight,
+    backgroundColor: colors.card,
     borderRadius: 16,
-    padding: 16,
+    padding: 18,
     gap: 12,
     borderWidth: 2,
-    borderColor: colors.secondary,
+    borderColor: colors.info,
+    boxShadow: '0px 3px 8px rgba(0, 0, 0, 0.1)',
+    elevation: 3,
   },
   infoText: {
     flex: 1,
-    fontSize: 12,
-    lineHeight: 18,
+    fontSize: 13,
+    lineHeight: 20,
     color: colors.text,
+    fontWeight: '500',
   },
 });

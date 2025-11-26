@@ -23,7 +23,9 @@ interface Playlist {
   title: string;
   description: string;
   url: string;
-  thumbnail: string;
+  icon: string;
+  androidIcon: string;
+  color: string;
 }
 
 export default function YouTubeScreen() {
@@ -39,49 +41,60 @@ export default function YouTubeScreen() {
     setHasAccess(access);
   };
 
-  // Demo playlists - replace with your actual YouTube playlist URLs
   const playlists: Playlist[] = [
     {
       id: '1',
       title: 'Kundalini Yoga Grundlagen',
       description: 'Einführung in Kundalini Yoga für Anfänger',
       url: 'https://www.youtube.com/playlist?list=YOUR_PLAYLIST_ID_1',
-      thumbnail: 'https://images.unsplash.com/photo-1544367567-0f2fcb009e0b?w=400',
+      icon: 'figure.yoga',
+      androidIcon: 'self_improvement',
+      color: colors.secondary,
     },
     {
       id: '2',
       title: 'Geführte Meditationen',
       description: 'Tägliche Meditationen für inneren Frieden',
       url: 'https://www.youtube.com/playlist?list=YOUR_PLAYLIST_ID_2',
-      thumbnail: 'https://images.unsplash.com/photo-1506126613408-eca07ce68773?w=400',
+      icon: 'brain.head.profile',
+      androidIcon: 'psychology',
+      color: colors.primary,
     },
     {
       id: '3',
       title: 'Atemübungen',
       description: 'Pranayama-Techniken für Energie und Klarheit',
       url: 'https://www.youtube.com/playlist?list=YOUR_PLAYLIST_ID_3',
-      thumbnail: 'https://images.unsplash.com/photo-1545389336-cf090694435e?w=400',
+      icon: 'wind',
+      androidIcon: 'air',
+      color: colors.success,
     },
     {
       id: '4',
       title: 'Fortgeschrittene Praxis',
       description: 'Tiefere Kundalini Yoga Sequenzen',
       url: 'https://www.youtube.com/playlist?list=YOUR_PLAYLIST_ID_4',
-      thumbnail: 'https://images.unsplash.com/photo-1599901860904-17e6ed7083a0?w=400',
+      icon: 'flame.fill',
+      androidIcon: 'local_fire_department',
+      color: colors.accent,
     },
     {
       id: '5',
       title: 'Chakra Heilung',
       description: 'Meditationen für jedes Chakra',
       url: 'https://www.youtube.com/playlist?list=YOUR_PLAYLIST_ID_5',
-      thumbnail: 'https://images.unsplash.com/photo-1593811167562-9cef47bfc4a7?w=400',
+      icon: 'sparkles',
+      androidIcon: 'auto_awesome',
+      color: colors.info,
     },
     {
       id: '6',
       title: 'Entspannung & Schlaf',
       description: 'Yoga Nidra und Entspannungstechniken',
       url: 'https://www.youtube.com/playlist?list=YOUR_PLAYLIST_ID_6',
-      thumbnail: 'https://images.unsplash.com/photo-1540206395-68808572332f?w=400',
+      icon: 'moon.stars.fill',
+      androidIcon: 'nightlight',
+      color: colors.primary,
     },
   ];
 
@@ -124,12 +137,14 @@ export default function YouTubeScreen() {
           style={styles.gradient}
         >
           <View style={styles.lockedContainer}>
-            <IconSymbol
-              ios_icon_name="lock.fill"
-              android_material_icon_name="lock"
-              size={64}
-              color={colors.textSecondary}
-            />
+            <View style={styles.lockedIconContainer}>
+              <IconSymbol
+                ios_icon_name="lock.fill"
+                android_material_icon_name="lock"
+                size={64}
+                color={colors.card}
+              />
+            </View>
             <Text style={styles.lockedTitle}>{t('upgradeRequired')}</Text>
             <Text style={styles.lockedText}>{t('upgradeMessage')}</Text>
             <TouchableOpacity
@@ -140,6 +155,12 @@ export default function YouTubeScreen() {
               }}
               activeOpacity={0.7}
             >
+              <IconSymbol
+                ios_icon_name="crown.fill"
+                android_material_icon_name="workspace_premium"
+                size={24}
+                color={colors.card}
+              />
               <Text style={styles.upgradeButtonText}>{t('upgradeNow')}</Text>
             </TouchableOpacity>
           </View>
@@ -159,8 +180,16 @@ export default function YouTubeScreen() {
           contentContainerStyle={styles.content}
           showsVerticalScrollIndicator={false}
         >
-          <Text style={styles.header}>{t('youtubeGallery')}</Text>
-          <Text style={styles.subtitle}>{t('playlists')}</Text>
+          <View style={styles.headerContainer}>
+            <IconSymbol
+              ios_icon_name="person.3.fill"
+              android_material_icon_name="groups"
+              size={48}
+              color={colors.secondary}
+            />
+            <Text style={styles.header}>{t('youtubeGallery')}</Text>
+            <Text style={styles.subtitle}>{t('playlists')}</Text>
+          </View>
 
           <View style={styles.playlistGrid}>
             {playlists.map((playlist, index) => (
@@ -170,22 +199,33 @@ export default function YouTubeScreen() {
                 onPress={() => handlePlaylistPress(playlist)}
                 activeOpacity={0.7}
               >
-                <View style={styles.thumbnailContainer}>
-                  <View style={styles.thumbnailPlaceholder}>
+                <LinearGradient
+                  colors={[playlist.color, playlist.color + 'CC']}
+                  style={styles.playlistGradient}
+                >
+                  <View style={styles.playlistIconContainer}>
                     <IconSymbol
-                      ios_icon_name="play.circle.fill"
-                      android_material_icon_name="play_circle_filled"
-                      size={48}
-                      color={colors.primary}
+                      ios_icon_name={playlist.icon}
+                      android_material_icon_name={playlist.androidIcon}
+                      size={40}
+                      color={colors.card}
                     />
                   </View>
-                </View>
-                <View style={styles.playlistInfo}>
-                  <Text style={styles.playlistTitle}>{playlist.title}</Text>
-                  <Text style={styles.playlistDescription}>
-                    {playlist.description}
-                  </Text>
-                </View>
+                  <View style={styles.playlistInfo}>
+                    <Text style={styles.playlistTitle}>{playlist.title}</Text>
+                    <Text style={styles.playlistDescription}>
+                      {playlist.description}
+                    </Text>
+                  </View>
+                  <View style={styles.playButton}>
+                    <IconSymbol
+                      ios_icon_name="play.fill"
+                      android_material_icon_name="play_arrow"
+                      size={24}
+                      color={colors.card}
+                    />
+                  </View>
+                </LinearGradient>
               </TouchableOpacity>
             ))}
           </View>
@@ -211,52 +251,69 @@ const styles = StyleSheet.create({
     paddingHorizontal: 20,
     paddingBottom: 120,
   },
+  headerContainer: {
+    alignItems: 'center',
+    marginBottom: 32,
+  },
   header: {
-    fontSize: 28,
+    fontSize: 32,
     fontWeight: '800',
     color: colors.text,
-    marginBottom: 8,
+    marginTop: 12,
+    marginBottom: 4,
     textAlign: 'center',
   },
   subtitle: {
     fontSize: 16,
     color: colors.textSecondary,
-    marginBottom: 24,
     textAlign: 'center',
+    fontWeight: '600',
   },
   playlistGrid: {
     gap: 16,
   },
   playlistCard: {
-    backgroundColor: colors.card,
-    borderRadius: 16,
+    borderRadius: 20,
     overflow: 'hidden',
-    boxShadow: '0px 4px 12px rgba(0, 0, 0, 0.1)',
-    elevation: 4,
+    boxShadow: '0px 6px 16px rgba(0, 0, 0, 0.15)',
+    elevation: 6,
   },
-  thumbnailContainer: {
-    width: '100%',
-    aspectRatio: 16 / 9,
-    backgroundColor: colors.highlight,
+  playlistGradient: {
+    padding: 20,
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 16,
   },
-  thumbnailPlaceholder: {
-    flex: 1,
+  playlistIconContainer: {
+    width: 64,
+    height: 64,
+    borderRadius: 32,
+    backgroundColor: 'rgba(255, 255, 255, 0.3)',
     justifyContent: 'center',
     alignItems: 'center',
   },
   playlistInfo: {
-    padding: 16,
+    flex: 1,
   },
   playlistTitle: {
     fontSize: 18,
-    fontWeight: '700',
-    color: colors.text,
+    fontWeight: '800',
+    color: colors.card,
     marginBottom: 4,
   },
   playlistDescription: {
     fontSize: 14,
-    color: colors.textSecondary,
+    color: colors.card,
     lineHeight: 20,
+    opacity: 0.9,
+  },
+  playButton: {
+    width: 48,
+    height: 48,
+    borderRadius: 24,
+    backgroundColor: 'rgba(255, 255, 255, 0.3)',
+    justifyContent: 'center',
+    alignItems: 'center',
   },
   lockedContainer: {
     flex: 1,
@@ -264,32 +321,46 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     paddingHorizontal: 40,
   },
+  lockedIconContainer: {
+    width: 120,
+    height: 120,
+    borderRadius: 60,
+    backgroundColor: colors.textSecondary,
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginBottom: 24,
+    boxShadow: '0px 8px 20px rgba(0, 0, 0, 0.2)',
+    elevation: 8,
+  },
   lockedTitle: {
-    fontSize: 24,
+    fontSize: 28,
     fontWeight: '800',
     color: colors.text,
-    marginTop: 24,
     marginBottom: 12,
     textAlign: 'center',
   },
   lockedText: {
-    fontSize: 16,
+    fontSize: 17,
     color: colors.textSecondary,
     textAlign: 'center',
-    marginBottom: 32,
-    lineHeight: 24,
+    marginBottom: 40,
+    lineHeight: 26,
+    fontWeight: '500',
   },
   upgradeButton: {
     backgroundColor: colors.secondary,
-    borderRadius: 12,
-    paddingVertical: 16,
-    paddingHorizontal: 32,
-    boxShadow: '0px 4px 12px rgba(0, 0, 0, 0.2)',
-    elevation: 4,
+    borderRadius: 16,
+    paddingVertical: 18,
+    paddingHorizontal: 40,
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 12,
+    boxShadow: '0px 6px 16px rgba(0, 0, 0, 0.2)',
+    elevation: 6,
   },
   upgradeButtonText: {
-    fontSize: 18,
-    fontWeight: '700',
+    fontSize: 19,
+    fontWeight: '800',
     color: colors.card,
   },
 });

@@ -28,12 +28,12 @@ export default function FloatingTabBar({ tabs }: FloatingTabBarProps) {
   const getIconName = (iconName: string) => {
     const iconMap: { [key: string]: { ios: string; android: string } } = {
       home: { ios: 'house.fill', android: 'home' },
-      target: { ios: 'target', android: 'track_changes' },
+      flame: { ios: 'flame.fill', android: 'local_fire_department' },
       'bar-chart': { ios: 'chart.bar.fill', android: 'bar_chart' },
       settings: { ios: 'gearshape.fill', android: 'settings' },
-      play: { ios: 'play.rectangle.fill', android: 'play_circle_filled' },
-      radio: { ios: 'dot.radiowaves.left.and.right', android: 'radio' },
-      star: { ios: 'star.fill', android: 'star' },
+      people: { ios: 'person.3.fill', android: 'groups' },
+      videocam: { ios: 'video.fill', android: 'videocam' },
+      crown: { ios: 'crown.fill', android: 'workspace_premium' },
     };
     return iconMap[iconName] || { ios: iconName, android: iconName };
   };
@@ -42,12 +42,12 @@ export default function FloatingTabBar({ tabs }: FloatingTabBarProps) {
     <View style={styles.container}>
       <BlurView intensity={80} tint="light" style={styles.blurContainer}>
         <View style={styles.tabBar}>
-          {tabs.map((tab) => {
+          {tabs.map((tab, index) => {
             const active = isActive(tab.route);
             const icons = getIconName(tab.icon);
             return (
               <TouchableOpacity
-                key={tab.name}
+                key={index}
                 style={styles.tab}
                 onPress={() => router.push(tab.route as any)}
                 activeOpacity={0.7}
@@ -55,8 +55,8 @@ export default function FloatingTabBar({ tabs }: FloatingTabBarProps) {
                 <IconSymbol
                   ios_icon_name={icons.ios}
                   android_material_icon_name={icons.android}
-                  size={24}
-                  color={active ? colors.primary : colors.text}
+                  size={26}
+                  color={active ? colors.primary : colors.textSecondary}
                 />
               </TouchableOpacity>
             );
@@ -80,14 +80,14 @@ const styles = StyleSheet.create({
     borderRadius: 25,
     overflow: 'hidden',
     borderWidth: 1,
-    borderColor: 'rgba(0, 0, 0, 0.1)',
+    borderColor: 'rgba(155, 89, 182, 0.2)',
   },
   tabBar: {
     flexDirection: 'row',
     justifyContent: 'space-around',
     alignItems: 'center',
     paddingVertical: 12,
-    backgroundColor: 'rgba(255, 255, 255, 0.8)',
+    backgroundColor: 'rgba(255, 255, 255, 0.9)',
   },
   tab: {
     flex: 1,

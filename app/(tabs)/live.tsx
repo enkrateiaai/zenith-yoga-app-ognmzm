@@ -82,12 +82,14 @@ export default function LiveScreen() {
           style={styles.gradient}
         >
           <View style={styles.lockedContainer}>
-            <IconSymbol
-              ios_icon_name="lock.fill"
-              android_material_icon_name="lock"
-              size={64}
-              color={colors.textSecondary}
-            />
+            <View style={styles.lockedIconContainer}>
+              <IconSymbol
+                ios_icon_name="lock.fill"
+                android_material_icon_name="lock"
+                size={64}
+                color={colors.card}
+              />
+            </View>
             <Text style={styles.lockedTitle}>{t('premiumRequired')}</Text>
             <Text style={styles.lockedText}>{t('premiumMessage')}</Text>
             <TouchableOpacity
@@ -98,6 +100,12 @@ export default function LiveScreen() {
               }}
               activeOpacity={0.7}
             >
+              <IconSymbol
+                ios_icon_name="video.fill"
+                android_material_icon_name="videocam"
+                size={24}
+                color={colors.card}
+              />
               <Text style={styles.upgradeButtonText}>{t('upgradeNow')}</Text>
             </TouchableOpacity>
           </View>
@@ -109,8 +117,21 @@ export default function LiveScreen() {
   return (
     <View style={styles.container}>
       <View style={styles.header}>
-        <Text style={styles.headerTitle}>{t('liveMeditation')}</Text>
-        <Text style={styles.headerSubtitle}>{t('liveStream')}</Text>
+        <LinearGradient
+          colors={[colors.primary, colors.accent]}
+          style={styles.headerGradient}
+          start={{ x: 0, y: 0 }}
+          end={{ x: 1, y: 0 }}
+        >
+          <View style={styles.headerContent}>
+            <View style={styles.liveIndicator}>
+              <View style={styles.liveDot} />
+              <Text style={styles.liveText}>LIVE</Text>
+            </View>
+            <Text style={styles.headerTitle}>{t('liveMeditation')}</Text>
+            <Text style={styles.headerSubtitle}>{t('liveStream')}</Text>
+          </View>
+        </LinearGradient>
       </View>
       <View style={styles.webViewContainer}>
         <WebView
@@ -137,24 +158,51 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   header: {
-    backgroundColor: colors.background,
+    overflow: 'hidden',
+  },
+  headerGradient: {
     paddingTop: Platform.OS === 'android' ? 48 : 60,
-    paddingBottom: 16,
+    paddingBottom: 20,
     paddingHorizontal: 20,
-    borderBottomWidth: 1,
-    borderBottomColor: colors.textSecondary,
+  },
+  headerContent: {
+    alignItems: 'center',
+  },
+  liveIndicator: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: 'rgba(255, 255, 255, 0.3)',
+    paddingHorizontal: 12,
+    paddingVertical: 6,
+    borderRadius: 20,
+    marginBottom: 12,
+    gap: 6,
+  },
+  liveDot: {
+    width: 8,
+    height: 8,
+    borderRadius: 4,
+    backgroundColor: colors.card,
+  },
+  liveText: {
+    fontSize: 12,
+    fontWeight: '800',
+    color: colors.card,
+    letterSpacing: 1,
   },
   headerTitle: {
     fontSize: 24,
     fontWeight: '800',
-    color: colors.text,
+    color: colors.card,
     textAlign: 'center',
     marginBottom: 4,
   },
   headerSubtitle: {
     fontSize: 14,
-    color: colors.textSecondary,
+    color: colors.card,
     textAlign: 'center',
+    opacity: 0.9,
+    fontWeight: '600',
   },
   webViewContainer: {
     flex: 1,
@@ -170,32 +218,46 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     paddingHorizontal: 40,
   },
+  lockedIconContainer: {
+    width: 120,
+    height: 120,
+    borderRadius: 60,
+    backgroundColor: colors.accent,
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginBottom: 24,
+    boxShadow: '0px 8px 20px rgba(0, 0, 0, 0.2)',
+    elevation: 8,
+  },
   lockedTitle: {
-    fontSize: 24,
+    fontSize: 28,
     fontWeight: '800',
     color: colors.text,
-    marginTop: 24,
     marginBottom: 12,
     textAlign: 'center',
   },
   lockedText: {
-    fontSize: 16,
+    fontSize: 17,
     color: colors.textSecondary,
     textAlign: 'center',
-    marginBottom: 32,
-    lineHeight: 24,
+    marginBottom: 40,
+    lineHeight: 26,
+    fontWeight: '500',
   },
   upgradeButton: {
     backgroundColor: colors.accent,
-    borderRadius: 12,
-    paddingVertical: 16,
-    paddingHorizontal: 32,
-    boxShadow: '0px 4px 12px rgba(0, 0, 0, 0.2)',
-    elevation: 4,
+    borderRadius: 16,
+    paddingVertical: 18,
+    paddingHorizontal: 40,
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 12,
+    boxShadow: '0px 6px 16px rgba(0, 0, 0, 0.2)',
+    elevation: 6,
   },
   upgradeButtonText: {
-    fontSize: 18,
-    fontWeight: '700',
-    color: colors.text,
+    fontSize: 19,
+    fontWeight: '800',
+    color: colors.card,
   },
 });
