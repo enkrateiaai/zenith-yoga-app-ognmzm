@@ -20,6 +20,7 @@ import {
   NotificationSettings,
 } from '@/utils/notifications';
 import { IconSymbol } from '@/components/IconSymbol';
+import { t } from '@/data/translations';
 
 const SETTINGS_KEY = '@notification_settings';
 
@@ -76,8 +77,8 @@ export default function SettingsScreen() {
       const hasPermission = await requestNotificationPermissions();
       if (!hasPermission) {
         Alert.alert(
-          'Permission Required',
-          'Please enable notifications in your device settings to receive reminders.',
+          'Berechtigung erforderlich',
+          'Bitte aktiviere Benachrichtigungen in deinen Geräteeinstellungen, um Erinnerungen zu erhalten.',
           [{ text: 'OK' }]
         );
         return;
@@ -110,10 +111,9 @@ export default function SettingsScreen() {
   };
 
   const formatTime = (hour: number, minute: number) => {
-    const period = hour >= 12 ? 'PM' : 'AM';
-    const displayHour = hour % 12 || 12;
+    const displayHour = hour.toString().padStart(2, '0');
     const displayMinute = minute.toString().padStart(2, '0');
-    return `${displayHour}:${displayMinute} ${period}`;
+    return `${displayHour}:${displayMinute}`;
   };
 
   const getDateFromTime = (hour: number, minute: number) => {
@@ -130,7 +130,7 @@ export default function SettingsScreen() {
         style={styles.gradient}
       >
         <View style={styles.content}>
-          <Text style={styles.header}>Notification Settings</Text>
+          <Text style={styles.header}>{t('notificationSettings')}</Text>
 
           <View style={styles.settingCard}>
             <View style={styles.settingHeader}>
@@ -141,7 +141,7 @@ export default function SettingsScreen() {
                   size={24}
                   color={colors.primary}
                 />
-                <Text style={styles.settingTitle}>Morning Reminder</Text>
+                <Text style={styles.settingTitle}>{t('morningReminder')}</Text>
               </View>
               <Switch
                 value={settings.morningEnabled}
@@ -175,7 +175,7 @@ export default function SettingsScreen() {
                   size={24}
                   color={colors.secondary}
                 />
-                <Text style={styles.settingTitle}>Midday Reminder</Text>
+                <Text style={styles.settingTitle}>{t('middayReminder')}</Text>
               </View>
               <Switch
                 value={settings.middayEnabled}
@@ -209,7 +209,7 @@ export default function SettingsScreen() {
                   size={24}
                   color={colors.accent}
                 />
-                <Text style={styles.settingTitle}>Evening Reminder</Text>
+                <Text style={styles.settingTitle}>{t('eveningReminder')}</Text>
               </View>
               <Switch
                 value={settings.eveningEnabled}
@@ -243,7 +243,7 @@ export default function SettingsScreen() {
                   size={24}
                   color={colors.secondary}
                 />
-                <Text style={styles.settingTitle}>Sunday Community</Text>
+                <Text style={styles.settingTitle}>{t('sundayCommunity')}</Text>
               </View>
               <Switch
                 value={settings.sundayEnabled}
@@ -276,8 +276,7 @@ export default function SettingsScreen() {
               color={colors.secondary}
             />
             <Text style={styles.infoText}>
-              Enable notifications to receive daily reminders for your meditation practice.
-              You can customize the time for each reminder.
+              {t('notificationInfo')}
             </Text>
           </View>
 
@@ -288,7 +287,7 @@ export default function SettingsScreen() {
                 settings[`${showTimePicker.type}Time`].minute
               )}
               mode="time"
-              is24Hour={false}
+              is24Hour={true}
               display={Platform.OS === 'ios' ? 'spinner' : 'default'}
               onChange={(event, date) =>
                 handleTimeChange(showTimePicker.type!, event, date)

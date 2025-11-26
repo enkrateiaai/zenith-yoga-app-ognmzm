@@ -13,6 +13,7 @@ import { colors } from '@/styles/commonStyles';
 import { getDailyQuote } from '@/data/motivationalContent';
 import { getStoredData, updateCheckIn, getTodayCheckIn, UserStats } from '@/utils/storage';
 import { IconSymbol } from '@/components/IconSymbol';
+import { t } from '@/data/translations';
 
 export default function HomeScreen() {
   const [expanded, setExpanded] = useState(false);
@@ -54,11 +55,11 @@ export default function HomeScreen() {
     const daysUntilSunday = dayOfWeek === 0 ? 0 : 7 - dayOfWeek;
     
     if (daysUntilSunday === 0) {
-      return 'Today is Sunday! 🙏';
+      return t('todayIsSunday');
     } else if (daysUntilSunday === 1) {
-      return 'Tomorrow is Sunday! 🙏';
+      return t('tomorrowIsSunday');
     } else {
-      return `${daysUntilSunday} days until Sunday meditation`;
+      return `${daysUntilSunday} ${t('daysUntilSunday')}`;
     }
   };
 
@@ -73,7 +74,7 @@ export default function HomeScreen() {
           contentContainerStyle={styles.content}
           showsVerticalScrollIndicator={false}
         >
-          <Text style={styles.header}>Daily Inspiration</Text>
+          <Text style={styles.header}>{t('dailyInspiration')}</Text>
           
           <TouchableOpacity
             style={styles.quoteCard}
@@ -93,7 +94,7 @@ export default function HomeScreen() {
               {dailyQuote.text}
             </Text>
             <Text style={styles.tapToExpand}>
-              {expanded ? 'Tap to collapse' : 'Tap to expand'}
+              {expanded ? t('tapToCollapse') : t('tapToExpand')}
             </Text>
           </TouchableOpacity>
 
@@ -105,11 +106,11 @@ export default function HomeScreen() {
               color={colors.primary}
             />
             <Text style={styles.streakText}>
-              {stats?.currentStreak || 0} Day Streak
+              {stats?.currentStreak || 0} {t('dayStreak')}
             </Text>
           </View>
 
-          <Text style={styles.sectionTitle}>Daily Practice</Text>
+          <Text style={styles.sectionTitle}>{t('dailyPractice')}</Text>
           
           <View style={styles.checkInContainer}>
             <TouchableOpacity
@@ -132,7 +133,7 @@ export default function HomeScreen() {
                   todayCheckIn.morningRoutine && styles.checkInTextActive,
                 ]}
               >
-                Morning Routine
+                {t('morningRoutine')}
               </Text>
             </TouchableOpacity>
 
@@ -156,7 +157,7 @@ export default function HomeScreen() {
                   todayCheckIn.meditation && styles.checkInTextActive,
                 ]}
               >
-                Meditation
+                {t('meditation')}
               </Text>
             </TouchableOpacity>
 
@@ -180,7 +181,7 @@ export default function HomeScreen() {
                   todayCheckIn.eveningReflection && styles.checkInTextActive,
                 ]}
               >
-                Evening Reflection
+                {t('eveningReflection')}
               </Text>
             </TouchableOpacity>
           </View>

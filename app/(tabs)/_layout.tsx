@@ -10,7 +10,7 @@ export default function TabLayout() {
       name: '(home)',
       route: '/(tabs)/(home)/',
       icon: 'home',
-      label: 'Home',
+      label: 'Start',
     },
     {
       name: 'challenge',
@@ -19,16 +19,22 @@ export default function TabLayout() {
       label: 'Challenge',
     },
     {
-      name: 'stats',
-      route: '/(tabs)/stats',
-      icon: 'bar-chart',
-      label: 'Stats',
+      name: 'youtube',
+      route: '/(tabs)/youtube',
+      icon: 'play',
+      label: 'YouTube',
     },
     {
-      name: 'settings',
-      route: '/(tabs)/settings',
-      icon: 'settings',
-      label: 'Settings',
+      name: 'live',
+      route: '/(tabs)/live',
+      icon: 'radio',
+      label: 'Live',
+    },
+    {
+      name: 'subscription',
+      route: '/(tabs)/subscription',
+      icon: 'star',
+      label: 'Abo',
     },
   ];
 
@@ -44,6 +50,9 @@ export default function TabLayout() {
         <Stack.Screen key="challenge" name="challenge" />
         <Stack.Screen key="stats" name="stats" />
         <Stack.Screen key="settings" name="settings" />
+        <Stack.Screen key="youtube" name="youtube" />
+        <Stack.Screen key="live" name="live" />
+        <Stack.Screen key="subscription" name="subscription" />
       </Stack>
       <FloatingTabBar tabs={tabs} />
     </>

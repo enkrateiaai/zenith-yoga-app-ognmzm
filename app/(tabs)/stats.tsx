@@ -10,6 +10,7 @@ import { LinearGradient } from 'expo-linear-gradient';
 import { colors } from '@/styles/commonStyles';
 import { getStoredData, UserStats } from '@/utils/storage';
 import { IconSymbol } from '@/components/IconSymbol';
+import { t } from '@/data/translations';
 
 export default function StatsScreen() {
   const [stats, setStats] = useState<UserStats | null>(null);
@@ -29,6 +30,22 @@ export default function StatsScreen() {
     return Math.round((completed / 40) * 100);
   };
 
+  const getMotivationMessage = () => {
+    if (!stats) return t('motivationStart');
+    
+    if (stats.currentStreak === 0) {
+      return t('motivationStart');
+    } else if (stats.currentStreak < 7) {
+      return t('motivationWeek1');
+    } else if (stats.currentStreak < 21) {
+      return t('motivationWeek3');
+    } else if (stats.currentStreak < 40) {
+      return t('motivationWeek6');
+    } else {
+      return t('motivationMaster');
+    }
+  };
+
   return (
     <View style={styles.container}>
       <LinearGradient
@@ -36,7 +53,7 @@ export default function StatsScreen() {
         style={styles.gradient}
       >
         <View style={styles.content}>
-          <Text style={styles.header}>Your Progress</Text>
+          <Text style={styles.header}>{t('yourProgress')}</Text>
           
           <View style={styles.statsGrid}>
             <View style={styles.statCard}>
@@ -47,7 +64,7 @@ export default function StatsScreen() {
                 color={colors.primary}
               />
               <Text style={styles.statValue}>{stats?.totalDays || 0}</Text>
-              <Text style={styles.statLabel}>Total Days</Text>
+              <Text style={styles.statLabel}>{t('totalDays')}</Text>
             </View>
 
             <View style={styles.statCard}>
@@ -58,7 +75,7 @@ export default function StatsScreen() {
                 color={colors.secondary}
               />
               <Text style={styles.statValue}>{stats?.currentStreak || 0}</Text>
-              <Text style={styles.statLabel}>Current Streak</Text>
+              <Text style={styles.statLabel}>{t('currentStreak')}</Text>
             </View>
 
             <View style={styles.statCard}>
@@ -69,7 +86,7 @@ export default function StatsScreen() {
                 color={colors.accent}
               />
               <Text style={styles.statValue}>{stats?.longestStreak || 0}</Text>
-              <Text style={styles.statLabel}>Longest Streak</Text>
+              <Text style={styles.statLabel}>{t('longestStreak')}</Text>
             </View>
 
             <View style={styles.statCard}>
@@ -80,27 +97,19 @@ export default function StatsScreen() {
                 color={colors.primary}
               />
               <Text style={styles.statValue}>{getChallengeCompletion()}%</Text>
-              <Text style={styles.statLabel}>Challenge Progress</Text>
+              <Text style={styles.statLabel}>{t('challengeProgress')}</Text>
             </View>
           </View>
 
           <View style={styles.motivationCard}>
-            <Text style={styles.motivationTitle}>Keep Going! 💪</Text>
+            <Text style={styles.motivationTitle}>{t('keepGoing')}</Text>
             <Text style={styles.motivationText}>
-              {stats?.currentStreak === 0
-                ? 'Start your journey today! Every expert was once a beginner.'
-                : stats?.currentStreak < 7
-                ? 'Great start! The first week is the hardest. You&apos;re building momentum!'
-                : stats?.currentStreak < 21
-                ? 'Amazing progress! You&apos;re forming a lasting habit. Keep it up!'
-                : stats?.currentStreak < 40
-                ? 'Incredible dedication! You&apos;re transforming your life one day at a time.'
-                : 'You&apos;re a meditation master! Your consistency is truly inspiring.'}
+              {getMotivationMessage()}
             </Text>
           </View>
 
           <View style={styles.insightCard}>
-            <Text style={styles.insightTitle}>Practice Insights</Text>
+            <Text style={styles.insightTitle}>{t('practiceInsights')}</Text>
             <View style={styles.insightRow}>
               <IconSymbol
                 ios_icon_name="checkmark.circle.fill"
@@ -109,7 +118,7 @@ export default function StatsScreen() {
                 color={colors.primary}
               />
               <Text style={styles.insightText}>
-                Consistency is key to transformation
+                {t('consistencyKey')}
               </Text>
             </View>
             <View style={styles.insightRow}>
@@ -120,7 +129,7 @@ export default function StatsScreen() {
                 color={colors.secondary}
               />
               <Text style={styles.insightText}>
-                40 days creates lasting neural pathways
+                {t('neuralPathways')}
               </Text>
             </View>
             <View style={styles.insightRow}>
@@ -131,7 +140,7 @@ export default function StatsScreen() {
                 color={colors.accent}
               />
               <Text style={styles.insightText}>
-                Daily practice compounds over time
+                {t('dailyCompounds')}
               </Text>
             </View>
           </View>

@@ -31,6 +31,9 @@ export default function FloatingTabBar({ tabs }: FloatingTabBarProps) {
       target: { ios: 'target', android: 'track_changes' },
       'bar-chart': { ios: 'chart.bar.fill', android: 'bar_chart' },
       settings: { ios: 'gearshape.fill', android: 'settings' },
+      play: { ios: 'play.rectangle.fill', android: 'play_circle_filled' },
+      radio: { ios: 'dot.radiowaves.left.and.right', android: 'radio' },
+      star: { ios: 'star.fill', android: 'star' },
     };
     return iconMap[iconName] || { ios: iconName, android: iconName };
   };

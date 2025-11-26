@@ -13,7 +13,7 @@ export default function TabLayout() {
       <NativeTabs.Screen
         name="(home)"
         options={{
-          title: 'Home',
+          title: 'Start',
           tabBarIcon: ({ color }) => ({ sfSymbol: 'house.fill', hierarchicalColor: color }),
         }}
       />
@@ -25,16 +25,39 @@ export default function TabLayout() {
         }}
       />
       <NativeTabs.Screen
+        name="youtube"
+        options={{
+          title: 'YouTube',
+          tabBarIcon: ({ color }) => ({ sfSymbol: 'play.rectangle.fill', hierarchicalColor: color }),
+        }}
+      />
+      <NativeTabs.Screen
+        name="live"
+        options={{
+          title: 'Live',
+          tabBarIcon: ({ color }) => ({ sfSymbol: 'dot.radiowaves.left.and.right', hierarchicalColor: color }),
+        }}
+      />
+      <NativeTabs.Screen
+        name="subscription"
+        options={{
+          title: 'Abo',
+          tabBarIcon: ({ color }) => ({ sfSymbol: 'star.fill', hierarchicalColor: color }),
+        }}
+      />
+      <NativeTabs.Screen
         name="stats"
         options={{
-          title: 'Stats',
+          title: 'Statistik',
+          href: null,
           tabBarIcon: ({ color }) => ({ sfSymbol: 'chart.bar.fill', hierarchicalColor: color }),
         }}
       />
       <NativeTabs.Screen
         name="settings"
         options={{
-          title: 'Settings',
+          title: 'Einstellungen',
+          href: null,
           tabBarIcon: ({ color }) => ({ sfSymbol: 'gearshape.fill', hierarchicalColor: color }),
         }}
       />

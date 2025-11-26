@@ -12,6 +12,7 @@ import * as Haptics from 'expo-haptics';
 import { colors } from '@/styles/commonStyles';
 import { getStoredData, updateChallengeProgress, UserStats } from '@/utils/storage';
 import { IconSymbol } from '@/components/IconSymbol';
+import { t } from '@/data/translations';
 
 export default function ChallengeScreen() {
   const [stats, setStats] = useState<UserStats | null>(null);
@@ -96,11 +97,11 @@ export default function ChallengeScreen() {
         style={styles.gradient}
       >
         <View style={styles.content}>
-          <Text style={styles.header}>40-Day Challenge</Text>
+          <Text style={styles.header}>{t('challengeTitle')}</Text>
           
           <View style={styles.progressCard}>
             <Text style={styles.progressText}>
-              {getCompletedDays()} / 40 Days
+              {getCompletedDays()} / 40 {t('days')}
             </Text>
             <View style={styles.progressBar}>
               <View
@@ -113,7 +114,7 @@ export default function ChallengeScreen() {
           </View>
 
           <View style={styles.milestonesCard}>
-            <Text style={styles.milestonesTitle}>Milestones</Text>
+            <Text style={styles.milestonesTitle}>{t('milestones')}</Text>
             <View style={styles.milestonesRow}>
               <View style={styles.milestoneItem}>
                 <IconSymbol
@@ -122,7 +123,7 @@ export default function ChallengeScreen() {
                   size={24}
                   color={getMilestoneStatus(7) ? colors.primary : colors.textSecondary}
                 />
-                <Text style={styles.milestoneText}>Day 7</Text>
+                <Text style={styles.milestoneText}>{t('day')} 7</Text>
               </View>
               <View style={styles.milestoneItem}>
                 <IconSymbol
@@ -131,7 +132,7 @@ export default function ChallengeScreen() {
                   size={24}
                   color={getMilestoneStatus(21) ? colors.secondary : colors.textSecondary}
                 />
-                <Text style={styles.milestoneText}>Day 21</Text>
+                <Text style={styles.milestoneText}>{t('day')} 21</Text>
               </View>
               <View style={styles.milestoneItem}>
                 <IconSymbol
@@ -140,7 +141,7 @@ export default function ChallengeScreen() {
                   size={24}
                   color={getMilestoneStatus(40) ? colors.accent : colors.textSecondary}
                 />
-                <Text style={styles.milestoneText}>Day 40</Text>
+                <Text style={styles.milestoneText}>{t('day')} 40</Text>
               </View>
             </View>
           </View>
@@ -169,7 +170,7 @@ export default function ChallengeScreen() {
                   currentPage === 0 && styles.pageButtonTextActive,
                 ]}
               >
-                Days 1-20
+                {t('days1to20')}
               </Text>
             </TouchableOpacity>
             <TouchableOpacity
@@ -189,7 +190,7 @@ export default function ChallengeScreen() {
                   currentPage === 1 && styles.pageButtonTextActive,
                 ]}
               >
-                Days 21-40
+                {t('days21to40')}
               </Text>
             </TouchableOpacity>
           </View>
