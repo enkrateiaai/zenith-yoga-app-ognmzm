@@ -14,11 +14,12 @@ import * as Haptics from 'expo-haptics';
 import { colors } from '@/styles/commonStyles';
 import { IconSymbol } from '@/components/IconSymbol';
 import { t } from '@/data/translations';
-import { hasAccessToLive } from '@/utils/subscriptionManager';
+import { hasAccessToLive, isDemoModeActive, getSubscriptionTier } from '@/utils/subscriptionManager';
 
 export default function LiveScreen() {
   const router = useRouter();
   const [hasAccess, setHasAccess] = useState(false);
+  const [isDemo, setIsDemo] = useState(false);
 
   useEffect(() => {
     checkAccess();
@@ -26,7 +27,11 @@ export default function LiveScreen() {
 
   const checkAccess = async () => {
     const access = await hasAccessToLive();
+    const demo = await isDemoModeActive();
+    const tier = await getSubscriptionTier();
+    
     setHasAccess(access);
+    setIsDemo(demo && tier === 'free');
   };
 
   const embedHTML = `
@@ -92,6 +97,24 @@ export default function LiveScreen() {
             </View>
             <Text style={styles.lockedTitle}>{t('premiumRequired')}</Text>
             <Text style={styles.lockedText}>{t('premiumMessage')}</Text>
+            
+            <TouchableOpacity
+              style={styles.demoButton}
+              onPress={() => {
+                Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
+                router.push('/(tabs)/settings');
+              }}
+              activeOpacity={0.7}
+            >
+              <IconSymbol
+                ios_icon_name="sparkles"
+                android_material_icon_name="auto_awesome"
+                size={24}
+                color={colors.text}
+              />
+              <Text style={styles.demoButtonText}>{t('tryDemo')}</Text>
+            </TouchableOpacity>
+
             <TouchableOpacity
               style={styles.upgradeButton}
               onPress={() => {
@@ -124,6 +147,17 @@ export default function LiveScreen() {
           end={{ x: 1, y: 0 }}
         >
           <View style={styles.headerContent}>
+            {isDemo && (
+              <View style={styles.demoBadge}>
+                <IconSymbol
+                  ios_icon_name="sparkles"
+                  android_material_icon_name="auto_awesome"
+                  size={16}
+                  color={colors.text}
+                />
+                <Text style={styles.demoBadgeText}>{t('demo')}</Text>
+              </View>
+            )}
             <View style={styles.liveIndicator}>
               <View style={styles.liveDot} />
               <Text style={styles.liveText}>LIVE</Text>
@@ -167,6 +201,22 @@ const styles = StyleSheet.create({
   },
   headerContent: {
     alignItems: 'center',
+  },
+  demoBadge: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: colors.warning,
+    paddingHorizontal: 12,
+    paddingVertical: 6,
+    borderRadius: 20,
+    marginBottom: 8,
+    gap: 6,
+  },
+  demoBadgeText: {
+    fontSize: 12,
+    fontWeight: '800',
+    color: colors.text,
+    letterSpacing: 1,
   },
   liveIndicator: {
     flexDirection: 'row',
@@ -240,9 +290,26 @@ const styles = StyleSheet.create({
     fontSize: 17,
     color: colors.textSecondary,
     textAlign: 'center',
-    marginBottom: 40,
+    marginBottom: 32,
     lineHeight: 26,
     fontWeight: '500',
+  },
+  demoButton: {
+    backgroundColor: colors.warning,
+    borderRadius: 16,
+    paddingVertical: 18,
+    paddingHorizontal: 40,
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 12,
+    boxShadow: '0px 6px 16px rgba(0, 0, 0, 0.2)',
+    elevation: 6,
+    marginBottom: 16,
+  },
+  demoButtonText: {
+    fontSize: 19,
+    fontWeight: '800',
+    color: colors.text,
   },
   upgradeButton: {
     backgroundColor: colors.accent,

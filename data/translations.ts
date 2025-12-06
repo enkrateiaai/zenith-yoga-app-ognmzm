@@ -49,6 +49,14 @@ export const translations = {
   sundayCommunity: 'Sonntags-Gemeinschaft',
   notificationInfo: 'Aktiviere Benachrichtigungen, um tägliche Erinnerungen für deine Meditationspraxis zu erhalten. Du kannst die Zeit für jede Erinnerung anpassen.',
   
+  // Demo Mode
+  demoMode: 'Demo-Modus',
+  demoModeDesc: '24h Premium-Vorschau',
+  demoModeActive: 'Demo-Modus aktiv',
+  timeRemaining: 'Verbleibende Zeit',
+  tryDemo: 'Demo testen',
+  demo: 'DEMO',
+  
   // Subscription Screen
   subscriptionTitle: 'Wähle dein Abo',
   freeTier: 'Kostenlos',

@@ -22,6 +22,11 @@ import {
 } from '@/utils/notifications';
 import { IconSymbol } from '@/components/IconSymbol';
 import { t } from '@/data/translations';
+import {
+  getDemoModeInfo,
+  setDemoMode,
+  getDemoTimeRemaining,
+} from '@/utils/subscriptionManager';
 
 const SETTINGS_KEY = '@notification_settings';
 
@@ -41,9 +46,20 @@ export default function SettingsScreen() {
     type: 'morning' | 'midday' | 'evening' | 'sunday' | null;
   }>({ type: null });
 
+  const [demoModeEnabled, setDemoModeEnabled] = useState(false);
+  const [demoTimeRemaining, setDemoTimeRemaining] = useState<string>('');
+
   useEffect(() => {
     loadSettings();
+    loadDemoMode();
   }, []);
+
+  useEffect(() => {
+    if (demoModeEnabled) {
+      const interval = setInterval(updateDemoTimer, 1000);
+      return () => clearInterval(interval);
+    }
+  }, [demoModeEnabled]);
 
   const loadSettings = async () => {
     try {
@@ -53,6 +69,31 @@ export default function SettingsScreen() {
       }
     } catch (error) {
       console.error('Error loading settings:', error);
+    }
+  };
+
+  const loadDemoMode = async () => {
+    try {
+      const demoInfo = await getDemoModeInfo();
+      setDemoModeEnabled(demoInfo.enabled);
+      if (demoInfo.enabled) {
+        updateDemoTimer();
+      }
+    } catch (error) {
+      console.error('Error loading demo mode:', error);
+    }
+  };
+
+  const updateDemoTimer = async () => {
+    const remaining = await getDemoTimeRemaining();
+    if (remaining > 0) {
+      const hours = Math.floor(remaining / (1000 * 60 * 60));
+      const minutes = Math.floor((remaining % (1000 * 60 * 60)) / (1000 * 60));
+      const seconds = Math.floor((remaining % (1000 * 60)) / 1000);
+      setDemoTimeRemaining(`${hours}h ${minutes}m ${seconds}s`);
+    } else {
+      setDemoTimeRemaining('Abgelaufen');
+      setDemoModeEnabled(false);
     }
   };
 
@@ -88,6 +129,48 @@ export default function SettingsScreen() {
 
     const newSettings = { ...settings, [key]: newValue };
     await saveSettings(newSettings);
+  };
+
+  const handleDemoModeToggle = async () => {
+    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
+
+    if (!demoModeEnabled) {
+      Alert.alert(
+        'Demo-Modus aktivieren',
+        'Möchtest du den Demo-Modus aktivieren? Du erhältst 24 Stunden vollen Zugriff auf alle Premium-Funktionen:\n\n• YouTube-Galerie (The Tribe)\n• Live-Meditation-Stream\n\nDer Demo-Modus läuft nach 24 Stunden automatisch ab.',
+        [
+          { text: 'Abbrechen', style: 'cancel' },
+          {
+            text: 'Aktivieren',
+            onPress: async () => {
+              const demoInfo = await setDemoMode(true);
+              setDemoModeEnabled(true);
+              updateDemoTimer();
+              Alert.alert(
+                'Demo-Modus aktiviert! 🎉',
+                'Du hast jetzt 24 Stunden vollen Zugriff auf alle Premium-Funktionen. Viel Spaß beim Erkunden!'
+              );
+            },
+          },
+        ]
+      );
+    } else {
+      Alert.alert(
+        'Demo-Modus deaktivieren',
+        'Möchtest du den Demo-Modus wirklich deaktivieren? Du verlierst den Zugriff auf Premium-Funktionen.',
+        [
+          { text: 'Abbrechen', style: 'cancel' },
+          {
+            text: 'Deaktivieren',
+            onPress: async () => {
+              await setDemoMode(false);
+              setDemoModeEnabled(false);
+              setDemoTimeRemaining('');
+            },
+          },
+        ]
+      );
+    }
   };
 
   const handleTimeChange = async (
@@ -172,12 +255,65 @@ export default function SettingsScreen() {
         >
           <View style={styles.headerContainer}>
             <IconSymbol
-              ios_icon_name="bell.badge.fill"
-              android_material_icon_name="notifications_active"
+              ios_icon_name="gearshape.fill"
+              android_material_icon_name="settings"
               size={48}
               color={colors.primary}
             />
-            <Text style={styles.header}>{t('notificationSettings')}</Text>
+            <Text style={styles.header}>{t('settings')}</Text>
+          </View>
+
+          {/* Demo Mode Section */}
+          <LinearGradient
+            colors={['#FFD93D', '#FFC107']}
+            style={styles.demoCard}
+          >
+            <View style={styles.demoHeader}>
+              <View style={styles.demoTitleRow}>
+                <View style={[styles.iconContainer, { backgroundColor: colors.warning }]}>
+                  <IconSymbol
+                    ios_icon_name="sparkles"
+                    android_material_icon_name="auto_awesome"
+                    size={28}
+                    color={colors.card}
+                  />
+                </View>
+                <View style={styles.demoTitleContainer}>
+                  <Text style={styles.demoTitle}>{t('demoMode')}</Text>
+                  <Text style={styles.demoSubtitle}>{t('demoModeDesc')}</Text>
+                </View>
+              </View>
+              <Switch
+                value={demoModeEnabled}
+                onValueChange={handleDemoModeToggle}
+                trackColor={{ false: colors.textSecondary, true: colors.success }}
+                thumbColor={colors.card}
+                ios_backgroundColor={colors.textSecondary}
+              />
+            </View>
+            {demoModeEnabled && (
+              <View style={styles.demoTimerContainer}>
+                <IconSymbol
+                  ios_icon_name="clock.fill"
+                  android_material_icon_name="schedule"
+                  size={20}
+                  color={colors.text}
+                />
+                <Text style={styles.demoTimerText}>
+                  {t('timeRemaining')}: {demoTimeRemaining}
+                </Text>
+              </View>
+            )}
+          </LinearGradient>
+
+          <View style={styles.sectionHeader}>
+            <IconSymbol
+              ios_icon_name="bell.badge.fill"
+              android_material_icon_name="notifications_active"
+              size={32}
+              color={colors.primary}
+            />
+            <Text style={styles.sectionTitle}>{t('notificationSettings')}</Text>
           </View>
 
           {notificationTypes.map((item, index) => {
@@ -298,6 +434,66 @@ const styles = StyleSheet.create({
     color: colors.text,
     marginTop: 12,
     textAlign: 'center',
+  },
+  demoCard: {
+    borderRadius: 20,
+    padding: 20,
+    marginBottom: 24,
+    boxShadow: '0px 8px 20px rgba(0, 0, 0, 0.2)',
+    elevation: 8,
+  },
+  demoHeader: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+  },
+  demoTitleRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 14,
+    flex: 1,
+  },
+  demoTitleContainer: {
+    flex: 1,
+  },
+  demoTitle: {
+    fontSize: 20,
+    fontWeight: '800',
+    color: colors.text,
+    marginBottom: 4,
+  },
+  demoSubtitle: {
+    fontSize: 13,
+    fontWeight: '600',
+    color: colors.text,
+    opacity: 0.8,
+  },
+  demoTimerContainer: {
+    marginTop: 16,
+    backgroundColor: colors.card,
+    borderRadius: 12,
+    padding: 14,
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 10,
+    boxShadow: '0px 3px 8px rgba(0, 0, 0, 0.15)',
+    elevation: 3,
+  },
+  demoTimerText: {
+    fontSize: 16,
+    fontWeight: '700',
+    color: colors.text,
+  },
+  sectionHeader: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 12,
+    marginBottom: 16,
+  },
+  sectionTitle: {
+    fontSize: 22,
+    fontWeight: '800',
+    color: colors.text,
   },
   settingCard: {
     borderRadius: 20,

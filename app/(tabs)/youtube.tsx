@@ -16,7 +16,7 @@ import * as Haptics from 'expo-haptics';
 import { colors } from '@/styles/commonStyles';
 import { IconSymbol } from '@/components/IconSymbol';
 import { t } from '@/data/translations';
-import { hasAccessToYouTube } from '@/utils/subscriptionManager';
+import { hasAccessToYouTube, isDemoModeActive, getSubscriptionTier } from '@/utils/subscriptionManager';
 
 interface Playlist {
   id: string;
@@ -31,6 +31,7 @@ interface Playlist {
 export default function YouTubeScreen() {
   const router = useRouter();
   const [hasAccess, setHasAccess] = useState(false);
+  const [isDemo, setIsDemo] = useState(false);
 
   useEffect(() => {
     checkAccess();
@@ -38,7 +39,11 @@ export default function YouTubeScreen() {
 
   const checkAccess = async () => {
     const access = await hasAccessToYouTube();
+    const demo = await isDemoModeActive();
+    const tier = await getSubscriptionTier();
+    
     setHasAccess(access);
+    setIsDemo(demo && tier === 'free');
   };
 
   const playlists: Playlist[] = [
@@ -147,6 +152,24 @@ export default function YouTubeScreen() {
             </View>
             <Text style={styles.lockedTitle}>{t('upgradeRequired')}</Text>
             <Text style={styles.lockedText}>{t('upgradeMessage')}</Text>
+            
+            <TouchableOpacity
+              style={styles.demoButton}
+              onPress={() => {
+                Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
+                router.push('/(tabs)/settings');
+              }}
+              activeOpacity={0.7}
+            >
+              <IconSymbol
+                ios_icon_name="sparkles"
+                android_material_icon_name="auto_awesome"
+                size={24}
+                color={colors.text}
+              />
+              <Text style={styles.demoButtonText}>{t('tryDemo')}</Text>
+            </TouchableOpacity>
+
             <TouchableOpacity
               style={styles.upgradeButton}
               onPress={() => {
@@ -180,6 +203,21 @@ export default function YouTubeScreen() {
           contentContainerStyle={styles.content}
           showsVerticalScrollIndicator={false}
         >
+          {isDemo && (
+            <LinearGradient
+              colors={['#FFD93D', '#FFC107']}
+              style={styles.demoBanner}
+            >
+              <IconSymbol
+                ios_icon_name="sparkles"
+                android_material_icon_name="auto_awesome"
+                size={24}
+                color={colors.text}
+              />
+              <Text style={styles.demoBannerText}>{t('demoModeActive')}</Text>
+            </LinearGradient>
+          )}
+
           <View style={styles.headerContainer}>
             <IconSymbol
               ios_icon_name="person.3.fill"
@@ -250,6 +288,22 @@ const styles = StyleSheet.create({
     paddingTop: Platform.OS === 'android' ? 48 : 20,
     paddingHorizontal: 20,
     paddingBottom: 120,
+  },
+  demoBanner: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    padding: 14,
+    borderRadius: 16,
+    marginBottom: 20,
+    gap: 10,
+    boxShadow: '0px 4px 12px rgba(0, 0, 0, 0.15)',
+    elevation: 5,
+  },
+  demoBannerText: {
+    fontSize: 16,
+    fontWeight: '800',
+    color: colors.text,
   },
   headerContainer: {
     alignItems: 'center',
@@ -343,9 +397,26 @@ const styles = StyleSheet.create({
     fontSize: 17,
     color: colors.textSecondary,
     textAlign: 'center',
-    marginBottom: 40,
+    marginBottom: 32,
     lineHeight: 26,
     fontWeight: '500',
+  },
+  demoButton: {
+    backgroundColor: colors.warning,
+    borderRadius: 16,
+    paddingVertical: 18,
+    paddingHorizontal: 40,
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 12,
+    boxShadow: '0px 6px 16px rgba(0, 0, 0, 0.2)',
+    elevation: 6,
+    marginBottom: 16,
+  },
+  demoButtonText: {
+    fontSize: 19,
+    fontWeight: '800',
+    color: colors.text,
   },
   upgradeButton: {
     backgroundColor: colors.secondary,
