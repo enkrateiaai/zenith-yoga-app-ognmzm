@@ -8,13 +8,17 @@ import {
   Platform,
 } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
-import { WebView } from 'react-native-webview';
 import { useRouter } from 'expo-router';
 import * as Haptics from 'expo-haptics';
 import { colors } from '@/styles/commonStyles';
 import { IconSymbol } from '@/components/IconSymbol';
 import { t } from '@/data/translations';
 import { hasAccessToLive, isDemoModeActive, getSubscriptionTier } from '@/utils/subscriptionManager';
+
+let WebView: any = null;
+if (Platform.OS === 'ios' || Platform.OS === 'android') {
+  WebView = require('react-native-webview').WebView;
+}
 
 export default function LiveScreen() {
   const router = useRouter();
@@ -78,6 +82,37 @@ export default function LiveScreen() {
       </body>
     </html>
   `;
+
+  if (Platform.OS !== 'ios' && Platform.OS !== 'android') {
+    return (
+      <View style={styles.container}>
+        <LinearGradient
+          colors={[colors.background, colors.highlight]}
+          style={styles.gradient}
+        >
+          <View style={styles.lockedContainer}>
+            <View style={styles.lockedIconContainer}>
+              <IconSymbol
+                ios_icon_name="exclamationmark.triangle.fill"
+                android_material_icon_name="warning"
+                size={64}
+                color={colors.warning}
+              />
+            </View>
+            <Text style={styles.lockedTitle}>Plattform nicht unterstützt</Text>
+            <Text style={styles.lockedText}>
+              Live-Streaming ist nur auf iOS- und Android-Geräten verfügbar. 
+              WebView wird auf dieser Plattform nicht unterstützt.
+            </Text>
+            <Text style={styles.lockedSubtext}>
+              Bitte verwenden Sie die mobile App auf Ihrem Smartphone oder Tablet, 
+              um auf Live-Meditationen zuzugreifen.
+            </Text>
+          </View>
+        </LinearGradient>
+      </View>
+    );
+  }
 
   if (!hasAccess) {
     return (
@@ -168,16 +203,18 @@ export default function LiveScreen() {
         </LinearGradient>
       </View>
       <View style={styles.webViewContainer}>
-        <WebView
-          source={{ html: embedHTML }}
-          style={styles.webView}
-          allowsFullscreenVideo={true}
-          mediaPlaybackRequiresUserAction={false}
-          javaScriptEnabled={true}
-          domStorageEnabled={true}
-          startInLoadingState={true}
-          scalesPageToFit={true}
-        />
+        {WebView && (
+          <WebView
+            source={{ html: embedHTML }}
+            style={styles.webView}
+            allowsFullscreenVideo={true}
+            mediaPlaybackRequiresUserAction={false}
+            javaScriptEnabled={true}
+            domStorageEnabled={true}
+            startInLoadingState={true}
+            scalesPageToFit={true}
+          />
+        )}
       </View>
     </View>
   );
@@ -290,9 +327,17 @@ const styles = StyleSheet.create({
     fontSize: 17,
     color: colors.textSecondary,
     textAlign: 'center',
-    marginBottom: 32,
+    marginBottom: 16,
     lineHeight: 26,
     fontWeight: '500',
+  },
+  lockedSubtext: {
+    fontSize: 15,
+    color: colors.textSecondary,
+    textAlign: 'center',
+    marginBottom: 32,
+    lineHeight: 22,
+    opacity: 0.8,
   },
   demoButton: {
     backgroundColor: colors.warning,

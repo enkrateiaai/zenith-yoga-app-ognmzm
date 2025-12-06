@@ -104,7 +104,9 @@ export default function YouTubeScreen() {
   ];
 
   const handlePlaylistPress = async (playlist: Playlist) => {
-    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
+    if (Platform.OS !== 'web') {
+      Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
+    }
     
     if (!hasAccess) {
       Alert.alert(
@@ -156,7 +158,9 @@ export default function YouTubeScreen() {
             <TouchableOpacity
               style={styles.demoButton}
               onPress={() => {
-                Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
+                if (Platform.OS !== 'web') {
+                  Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
+                }
                 router.push('/(tabs)/settings');
               }}
               activeOpacity={0.7}
@@ -173,7 +177,9 @@ export default function YouTubeScreen() {
             <TouchableOpacity
               style={styles.upgradeButton}
               onPress={() => {
-                Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
+                if (Platform.OS !== 'web') {
+                  Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
+                }
                 router.push('/(tabs)/subscription');
               }}
               activeOpacity={0.7}
