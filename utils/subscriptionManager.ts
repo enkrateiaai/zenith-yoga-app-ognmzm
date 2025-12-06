@@ -22,7 +22,15 @@ export interface DemoModeInfo {
 // Demo mode duration in milliseconds (24 hours)
 const DEMO_DURATION = 24 * 60 * 60 * 1000;
 
+// TEMPORARY: Always return premium access for testing
+const ENABLE_FREE_ACCESS = true;
+
 export const getSubscriptionTier = async (): Promise<SubscriptionTier> => {
+  // Return premium for free access mode
+  if (ENABLE_FREE_ACCESS) {
+    return 'premium';
+  }
+
   try {
     const stored = await AsyncStorage.getItem(SUBSCRIPTION_KEY);
     if (stored) {
@@ -123,6 +131,11 @@ export const getDemoTimeRemaining = async (): Promise<number> => {
 };
 
 export const hasAccessToYouTube = async (): Promise<boolean> => {
+  // Always grant access in free mode
+  if (ENABLE_FREE_ACCESS) {
+    return true;
+  }
+
   const tier = await getSubscriptionTier();
   const demoActive = await isDemoModeActive();
   
@@ -130,6 +143,11 @@ export const hasAccessToYouTube = async (): Promise<boolean> => {
 };
 
 export const hasAccessToLive = async (): Promise<boolean> => {
+  // Always grant access in free mode
+  if (ENABLE_FREE_ACCESS) {
+    return true;
+  }
+
   const tier = await getSubscriptionTier();
   const demoActive = await isDemoModeActive();
   
